@@ -35,13 +35,20 @@ void loop() {
   Serial.print(temperature);
   Serial.println(" °C");
 
-  // 온도에 따라 릴레이 제어
-  if (temperature < 10) {
-    digitalWrite(RELAY_PIN, HIGH); // 릴레이 ON
-  } else if (temperature >= 0) {
-    digitalWrite(RELAY_PIN, LOW); // 릴레이 OFF
+  // 온도가 정상적으로 읽혔는지 확인
+  if (temperature == DEVICE_DISCONNECTED_C) {
+    Serial.println("Error: Failed to read temperature from DS18B20 sensor.");
+  } else {
+    // 온도가 정상적으로 읽힌 경우에만 릴레이 제어
+    if (temperature >= 5) {
+      digitalWrite(RELAY_PIN, LOW); // 릴레이 OFF (30°C 이상)
+      Serial.println("Relay OFF: Temperature is 5°C or higher.");
+    } else if (temperature <= 1) {
+      digitalWrite(RELAY_PIN, HIGH); // 릴레이 ON (28°C 이하)
+      Serial.println("Relay ON: Temperature is 1°C or lower.");
+    }
   }
 
-  // 딜레이 (1초)
-  delay(1000);
+  // 딜레이 (5초)
+  delay(5000);
 }
